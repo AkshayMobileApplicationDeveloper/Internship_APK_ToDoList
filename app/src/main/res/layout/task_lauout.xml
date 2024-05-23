@@ -17,9 +17,12 @@
             android:id="@+id/idMaterialCheckBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:textStyle="bold"
+            android:fontFamily="@font/cambo"
+            android:textSize="14dp"
             android:text="This is a task that has to be completed. "
-            android:padding="8dp"
-            android:buttonTint="@color/ColorPrimary"
+            android:paddingHorizontal="8dp"
+            android:textColor="#040E47"
             />
 
             <TextView
@@ -30,6 +33,8 @@
                 android:text="I am going to market"
                 android:paddingStart="40dp"
                 android:textSize="16dp"
+                android:fontFamily="@font/cambo"
+                android:textColor="#040E47"
                 />
 
 
