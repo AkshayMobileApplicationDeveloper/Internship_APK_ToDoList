@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.content.DialogInterface;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 
 import com.example.todolist.Adapter.ToDoAdapter;
@@ -46,6 +47,7 @@ public class MainActivity extends AppCompatActivity implements OnDialogCloseList
         floating_Action_Button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Log.w("TAG", "floating Action Button was Clicked Now" );
                 AddNewTask.newInstance().show(getSupportFragmentManager(), AddNewTask.TAG);
             }
         });
