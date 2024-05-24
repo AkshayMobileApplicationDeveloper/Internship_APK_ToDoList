@@ -44,4 +44,5 @@ dependencies {
 }
 dependencies {
     implementation "com.github.skydoves:elasticviews:2.1.0"
+    implementation 'it.xabaras.android:recyclerview-swipedecorator:1.4'
 }
