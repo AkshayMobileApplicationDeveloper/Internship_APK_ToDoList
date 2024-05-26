@@ -21,9 +21,10 @@ public class SplashActivity extends AppCompatActivity {
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                Log.w("TAG", "run: first Page" );
+
                Intent intent=new Intent(getApplicationContext(),MainActivity.class);
                startActivity(intent);
+               Log.w("TAG", "run: first Page" );
             }
         },5000);
     }

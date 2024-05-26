@@ -34,73 +34,84 @@ public class AddNewTask extends BottomSheetDialogFragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.add_new_task, container, false);
-        return view;
+        return inflater.inflate(R.layout.add_new_task, container, false);
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
         editTextTask = view.findViewById(R.id.Edit_textTask);
         editTextDescription = view.findViewById(R.id.Edit_text_disc);
         btnSaveEdit = view.findViewById(R.id.BTnSavedEdit);
-
         dataBaseHelper = new DataBaseHelper(getActivity());
-        boolean isUpdate = false;
 
         Bundle bundle = getArguments();
-        if (bundle != null) {
-            isUpdate = true;
-            String task = bundle.getString("Task");
-            String description = bundle.getString("Discription");
+        boolean isUpdate = bundle != null;
+
+        if (isUpdate) {
+            String task = bundle.getString("Task", "");
+            String description = bundle.getString("Description", "");
 
             editTextTask.setText(task);
             editTextDescription.setText(description);
-
-            if (task.length() > 0 || description.length() > 0) {
-                btnSaveEdit.setEnabled(true);
-            }
-
-            editTextTask.addTextChangedListener(new TextWatcher() {
-                @Override
-                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                }
-
-                @Override
-                public void onTextChanged(CharSequence s, int start, int before, int count) {
-                    if (s.toString().trim().isEmpty()) {
-                        btnSaveEdit.setEnabled(false);
-                        btnSaveEdit.setBackgroundColor(getResources().getColor(android.R.color.darker_gray));
-                    } else {
-                        btnSaveEdit.setEnabled(true);
-                        btnSaveEdit.setBackgroundColor(getResources().getColor(android.R.color.holo_blue_dark));
-                    }
-                }
-
-                @Override
-                public void afterTextChanged(Editable s) {
-                }
-            });
+            btnSaveEdit.setEnabled(!task.isEmpty() || !description.isEmpty());
         }
 
-        final boolean finalIsUpdate = isUpdate;
+        editTextTask.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (s.toString().trim().isEmpty()) {
+                    btnSaveEdit.setEnabled(false);
+                    btnSaveEdit.setBackgroundColor(getResources().getColor(android.R.color.darker_gray));
+                } else {
+                    btnSaveEdit.setEnabled(true);
+                    btnSaveEdit.setBackgroundColor(getResources().getColor(android.R.color.holo_blue_dark));
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {}
+        });
+
         btnSaveEdit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 String text = editTextTask.getText().toString().trim();
                 String description = editTextDescription.getText().toString().trim();
 
-                if (finalIsUpdate) {
-                    dataBaseHelper.updateTask(bundle.getInt("id"), text);
+                if (isUpdate) {
+                    try {
+                        // Ensure that id, text (task), and description are extracted correctly from the bundle
+                        int id = bundle.getInt("id");
+                        // Extract description if available
+
+                        // Call the updateTask method with the extracted id, text, and description
+                        dataBaseHelper.updateTask(id, text, description);
+
+                        Log.d(TAG, "Task updated successfully");
+                    } catch (Exception e) {
+                        Log.e(TAG, "Error updating task", e);
+                    }
+
                 } else {
                     ToDoModel item = new ToDoModel();
                     item.setTask(text);
-                    item.setDiscription(description);
+                    item.setDescription(description);
                     item.setStatus(0);
-                    dataBaseHelper.insertTask(item);
+
+                    try {
+                        dataBaseHelper.insertTask(item);
+                        Log.d(TAG, "Task inserted successfully");
+                    } catch (Exception e) {
+                        Log.e(TAG, "Error inserting task", e);
+                    }
                 }
+
                 dismiss();
-                Log.w("TAG", "Task have saved right now" );
             }
         });
     }
@@ -108,9 +119,8 @@ public class AddNewTask extends BottomSheetDialogFragment {
     @Override
     public void onDismiss(@NonNull DialogInterface dialog) {
         super.onDismiss(dialog);
-        MainActivity mainActivity = (MainActivity) getActivity();
-        if (mainActivity instanceof OnDialogCloseListener) {
-            ((OnDialogCloseListener) mainActivity).onDialogClose(dialog);
+        if (getActivity() instanceof OnDialogCloseListener) {
+            ((OnDialogCloseListener) getActivity()).onDialogClose(dialog);
         }
     }
 }
