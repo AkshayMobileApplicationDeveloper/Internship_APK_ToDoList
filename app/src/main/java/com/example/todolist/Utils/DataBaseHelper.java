@@ -11,6 +11,7 @@ import androidx.annotation.Nullable;
 
 import com.example.todolist.Model.ToDoModel;
 
+import java.sql.CallableStatement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -46,21 +47,28 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     public void insertTask(ToDoModel model) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
-        values.put(TASK_NAME, model.getTask());
-        values.put(TASK_STATUS, 0);
-        values.put(TASK_DESCRIPTION, model.getDiscription()); // Corrected method name
-        db.insert(TABLE_NAME, null, values);
-        db.close(); // Close the database connection
+        values.put("task", model.getTask());
+        values.put("description", model.getDescription());
+        values.put("status", model.getStatus());
+        db.insert("tasks", null, values);
+        db.close();
     }
 
     // Update Task
-    public void updateTask(int id, String task) {
+    public void updateTask(int id, String task, String description) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
-        values.put(TASK_NAME, task);
-        db.update(TABLE_NAME, values, TASK_ID + " = ?", new String[]{String.valueOf(id)});
-        db.close(); // Close the database connection
+
+        // Add the task and description to the ContentValues
+        values.put("task", task);
+        values.put("description", description);
+
+        // Update the task in the database
+        db.update("tasks", values, "id=?", new String[]{String.valueOf(id)});
+        db.close();
     }
+
+
 
     // Update Description
     public void updateDescription(int id, String description) { // Corrected method name
@@ -100,7 +108,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                 task.setId(cursor.getInt(cursor.getColumnIndex(TASK_ID)));
                 task.setTask(cursor.getString(cursor.getColumnIndex(TASK_NAME)));
                 task.setStatus(cursor.getInt(cursor.getColumnIndex(TASK_STATUS)));
-                task.setDiscription(cursor.getString(cursor.getColumnIndex(TASK_DESCRIPTION))); // Corrected method name
+                task.setDescription(cursor.getString(cursor.getColumnIndex(TASK_DESCRIPTION))); // Corrected method name
                 modelList.add(task);
             } while (cursor.moveToNext());
             cursor.close(); // Close the cursor
